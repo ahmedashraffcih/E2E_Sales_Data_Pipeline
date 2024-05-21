@@ -38,15 +38,31 @@ def extract_weather_api(locationlist):
         data['temp']= res['main']['temp']
         data['pressure']= res['main']['pressure']
         data['humidity']= res['main']['humidity']
-        data['grnd_level']= res['main']['grnd_level']
-        data['sea_level']= res['main']['sea_level']
-        data['wind_speed']= res['wind']['speed']
-        data['wind_deg']= res['wind']['deg']
-        data['wind_gust']= res['wind']['gust']
-        data['pressure']= res['main']['pressure']
+        # data['grnd_level']= res['main']['grnd_level']
+        # data['sea_level']= res['main']['sea_level']
+        # data['wind_speed']= res['wind']['speed']
+        # data['wind_deg']= res['wind']['deg']
+        # data['wind_gust']= res['wind']['gust']
+        # data['pressure']= res['main']['pressure']
         weather_list.append(data)
     return weather_list
-
+def extract_weather_api2(latitude, longitude):
+    api_key = load_api_key()
+    url = f"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        weather_info = {
+            'weather': data['weather'][0]['main'],
+            'description': data['weather'][0]['description'],
+            'temp': data['main']['temp'],
+            'pressure': data['main']['pressure'],
+            'humidity': data['main']['humidity'],
+        }
+        return weather_info
+    else:
+        print(f"Failed to fetch weather data for coordinates ({latitude}, {longitude})")
+        return None
 def format_users_data(res):
     data = {}
     # Flat values
