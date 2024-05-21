@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import datetime
-from utils.utils import format_users_data, extract_users_api, export_to_json, extract_weather_api
+from scripts.utils.utils import format_users_data, extract_users_api, export_to_json, extract_weather_api
 
 def extract_users_data_json():
     # Export data to bronze layer
@@ -27,4 +27,5 @@ def extract_weather_data_csv():
     location_df = users_df[['id', 'lat', 'lng']]
     locationlist = list(location_df.values)
     weather_df = pd.DataFrame(extract_weather_api(locationlist))
-    weather_df.to_csv('./datalake/bronze/weather.csv',index=False)
+    return weather_df
+    # weather_df.to_csv('./datalake/bronze/weather.csv',index=False)

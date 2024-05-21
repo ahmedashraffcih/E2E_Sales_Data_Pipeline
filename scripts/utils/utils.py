@@ -76,13 +76,3 @@ def export_to_json(output_directory,data,filename):
     with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
         print(f'{filename} file has been exported to {file_path}')
-
-def clean_phone_number(phone):
-    try:
-        parsed_number = phonenumbers.parse(phone, "US")
-        if phonenumbers.is_valid_number(parsed_number):
-            return phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
-        else:
-            return phone
-    except phonenumbers.NumberParseException:
-        return phone
