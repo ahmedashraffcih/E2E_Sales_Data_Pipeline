@@ -1,5 +1,5 @@
-from utils.db_utils import *
-from sql.sql_queries import *
+from scripts.utils.db_utils import *
+from scripts.sql.sql_queries import *
 
 host ="localhost"
 database = "sales_db"
@@ -18,4 +18,32 @@ def create_tables():
             execute_query(conn, query, table_name)
         close_connection(conn)
 
-create_tables()
+
+def drop_tables():
+    queries = [
+        (DROP_USERS_TABLE_SQL, "users"),
+        (DROP_PRODUCT_TABLE_SQL, "products"),
+        (DROP_FACT_TABLE_SQL, "facts")
+    ]
+    conn = create_connection()
+    if conn:
+        for query, table_name in queries:
+            execute_query(conn, query, table_name)
+        close_connection(conn)
+
+def load_data_to_postgres(table_name, data_frame):
+    conn = create_connection()
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute(f"TRUNCATE TABLE {table_name} RESTART IDENTITY;")
+        # Insert new data
+        for i, row in data_frame.iterrows():
+            cols = ', '.join(list(row.index))
+            vals = ', '.join(['%s'] * len(row))
+            insert_query = f"INSERT INTO {table_name} ({cols}) VALUES ({vals})"
+            cursor.execute(insert_query, tuple(row))
+        conn.commit()
+        print(f"Data loaded successfully into table {table_name}!")
+        close_connection(conn)
+    else:
+        print(f"Failed to connect to the database and load data into table {table_name}")
