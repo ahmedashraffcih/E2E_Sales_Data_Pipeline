@@ -28,6 +28,34 @@ Through out the developing of the data pipeline there's some data issues appeare
     - some products appeared multiple times with different prices and weird dates first I though about taking the average price of the product through the data, but the best case is to take the latest price by the latest order date of the purchase
 - Since we need to know the weather for each sale it will make more since if we can fetch the data from the api with the sale date in addition to the lat and lan but that wasn't an option and also the only lat and lan values we have appears in the users side.
 - I though about creating fake data for stores but the requirments
+
+Loading New Users Data: The new users' data is loaded from the Bronze layer, and the necessary SCD columns (start_date, end_date, is_current) are added.
+
+Loading Existing Users Data: The existing users' data is loaded from the Silver layer. If the file does not exist, an empty DataFrame is created.
+
+Applying SCD Type 2 Logic: The new users' data is iterated over, and for each user, it checks if a corresponding record exists in the existing data:
+
+If a change is detected, the end_date and is_current fields of the existing record are updated.
+The new record is added to the list of updated users.
+If no corresponding record exists, the new record is directly added.
+Merging Data: The updated users' DataFrame is concatenated with the existing users' DataFrame to create the final users' DataFrame.
+
+Saving to Silver Layer: The final DataFrame is saved back to the Silver layer.
+
+This function ensures that historical changes are tracked for each user, maintaining a history of changes according to the SCD Type 2 methodology.
+
+### Step 3: Data Delivery
+- The choice between either Upsert the data or full load the data from silver layer I chose the full load approach since it have some advantages:
+    - Simplifies the process, as it involves overwriting the entire dataset.
+    - Ensures that the Gold layer is always in sync with the Silver layer without missing any updates.
+    - Useful when data consistency and completeness are more critical than efficiency.
+
+- Decision Factors
+    - Dataset Size: For large datasets with minimal changes, use upsert. For small to moderate datasets, full load might be simpler and easier.
+    - Frequency of Changes: If changes are frequent and impact a significant portion of the data, consider full load. For sparse and infrequent changes, upsert is more efficient.
+    - Historical Accuracy: If maintaining historical accuracy and tracking incremental changes are critical, upsert is preferred.
+    - Resource Constraints: Full load operations are resource-intensive. If resources are limited, upsert can be more efficient.
+
 ## Features
 
 - Continuous Integration: Automatically runs unit tests whenever changes are pushed to the repository to ensure code quality.

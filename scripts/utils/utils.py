@@ -2,7 +2,6 @@ import requests
 import os
 import json
 from dotenv import load_dotenv
-import phonenumbers
 
 def load_api_key():
     load_dotenv()  # Load variables from .env file
