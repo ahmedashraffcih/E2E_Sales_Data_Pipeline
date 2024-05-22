@@ -3,9 +3,7 @@ import os
 from datetime import datetime
 import re
 import random
-
-# from scripts.extract_data import extract_weather_data_csv
-from utils.utils import *
+from scripts.utils.utils import *
 
 def process_users_data():
     users_df = pd.read_csv('./datalake/bronze/users.csv')
@@ -27,7 +25,7 @@ def process_users_data():
     updated_users = []
 
     for idx, new_row in users_df.iterrows():
-        existing_row = existing_users_df[existing_users_df['id'] == new_row['id']]
+        existing_row = existing_users_df[existing_users_df['user_id'] == new_row['user_id']]
         
         if not existing_row.empty:
             existing_row = existing_row.iloc[0]
@@ -37,8 +35,8 @@ def process_users_data():
                (new_row['city'] != existing_row['city']):
                 
                 # Update existing record 
-                existing_users_df.loc[existing_users_df['id'] == new_row['id'], 'end_date'] = datetime.now().date()
-                existing_users_df.loc[existing_users_df['id'] == new_row['id'], 'is_current'] = False
+                existing_users_df.loc[existing_users_df['user_id'] == new_row['user_id'], 'end_date'] = datetime.now().date()
+                existing_users_df.loc[existing_users_df['user_id'] == new_row['user_id'], 'is_current'] = False
                 # Add the new record
                 updated_users.append(new_row)
         else:
@@ -52,6 +50,7 @@ def process_users_data():
 
 def process_sales_data():
     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')
+    sales_df.drop_duplicates(subset=['order_id'], inplace=True)
     store_ids = [random.randint(1, 20) for _ in range(len(sales_df))]
     sales_df['store_id'] = store_ids
     weather_data = []
@@ -62,6 +61,8 @@ def process_sales_data():
         if weather_info:
             weather_data.append({
                 'store_id': store_id,
+                'lat':weather_info['lat'],
+                'lng':weather_info['lng'],
                 'weather': weather_info['weather'],
                 'description': weather_info['description'],
                 'temp': weather_info['temp'],
@@ -72,8 +73,6 @@ def process_sales_data():
     merged_df = pd.merge(sales_df, weather_df, on='store_id', how='left')
     merged_df.to_csv('./datalake/silver/sales_data.csv', index=False)
 
-
-process_users_data()
 
 # def process_sales_data():
 #     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')

@@ -57,6 +57,8 @@ def extract_weather_api2(latitude, longitude):
             'temp': data['main']['temp'],
             'pressure': data['main']['pressure'],
             'humidity': data['main']['humidity'],
+            'lat': data['coord']['lat'],
+            'lng': data['coord']['lon'],
         }
         return weather_info
     else:
@@ -65,7 +67,7 @@ def extract_weather_api2(latitude, longitude):
 def format_users_data(res):
     data = {}
     # Flat values
-    data['id']= res['id']
+    data['user_id']= res['id']
     data['name']= res['name']
     data['username']= res['username']
     data['email']= res['email']
