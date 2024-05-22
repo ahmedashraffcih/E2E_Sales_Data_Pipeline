@@ -13,8 +13,42 @@ def process_users_data():
     users_df['end_date'] = '9999-12-31'
     users_df['is_current'] = True
     users_df['phone'] = users_df['phone'].apply(lambda x:re.sub(r'\D', '', x))
-    users_df.to_csv('./datalake/silver/users.csv',index=False)
+    # users_df.to_csv('./datalake/silver/users.csv',index=False)
+    ##### Applying SCD Type 2 Logic
+    try:
+        # Load existing users data
+        existing_users_df = pd.read_csv('./datalake/silver/users.csv')
+        existing_users_df['start_date'] = pd.to_datetime(existing_users_df['start_date'])
+        existing_users_df['end_date'] = existing_users_df['end_date']
+    except FileNotFoundError:
+        # If the Silver layer file does not exist, initialize it
+        existing_users_df = pd.DataFrame(columns=users_df.columns)
+    # list to hold the updated records
+    updated_users = []
 
+    for idx, new_row in users_df.iterrows():
+        existing_row = existing_users_df[existing_users_df['id'] == new_row['id']]
+        
+        if not existing_row.empty:
+            existing_row = existing_row.iloc[0]
+            # Check for changes
+            if (new_row['name'] != existing_row['name']) or \
+               (new_row['email'] != existing_row['email']) or \
+               (new_row['city'] != existing_row['city']):
+                
+                # Update existing record 
+                existing_users_df.loc[existing_users_df['id'] == new_row['id'], 'end_date'] = datetime.now().date()
+                existing_users_df.loc[existing_users_df['id'] == new_row['id'], 'is_current'] = False
+                # Add the new record
+                updated_users.append(new_row)
+        else:
+            # Add if it doesn't exist
+            updated_users.append(new_row)
+            
+    updated_users_df = pd.DataFrame(updated_users)
+    final_users_df = pd.concat([existing_users_df, updated_users_df], ignore_index=True)
+    # Save the final DataFrame to the Silver layer
+    final_users_df.to_csv('./datalake/silver/users.csv', index=False)
 
 def process_sales_data():
     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')
@@ -39,7 +73,7 @@ def process_sales_data():
     merged_df.to_csv('./datalake/silver/sales_data.csv', index=False)
 
 
-process_sales_data()
+process_users_data()
 
 # def process_sales_data():
 #     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')

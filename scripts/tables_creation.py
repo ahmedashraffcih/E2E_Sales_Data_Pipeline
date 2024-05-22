@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2 import Error
-from sql_queries import *
+from scripts.sql.sql_queries import *
 
 host ="localhost"
 database = "sales_db"
