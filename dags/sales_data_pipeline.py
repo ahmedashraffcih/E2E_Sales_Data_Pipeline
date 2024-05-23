@@ -33,39 +33,50 @@ def load_credentials():
         "host": host,
         "db_name": db_name,
         "user": user,
-        "password": password
+        "password": password,
     }
 
 # Define task functions
 def database_preparation():
-    db_credentials = load_credentials()
-    print('database_preparation started')
-    drop_tables(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
-    create_tables(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
-    print('database_preparation done')
+    try:
+        db_credentials = load_credentials()
+        logging.info('database_preparation started')
+        drop_tables(**db_credentials)
+        create_tables(**db_credentials)
+        logging.info('database_preparation done')
+    except Exception as e:
+        logging.error(f"Error in database_preparation: {str(e)}")
 
 def data_extraction():
-    print('extraction started')
-    extract_users_data_json()
-    extract_users_data_csv()
-    print('extraction done')
+    try:
+        logging.info('data_extraction started')
+        extract_users_data_json()
+        extract_users_data_csv()
+        logging.info('data_extraction done')
+    except Exception as e:
+        logging.error(f"Error in data_extraction: {str(e)}")
 
 def data_enrichment():
-    print('data_enrichment started')
-    process_users_data()
-    process_sales_data(Variable.get("OPENWEATHERMAP_API_KEY"))
-    print('data_enrichment done')
+    try:
+        logging.info('data_enrichment started')
+        process_users_data()
+        process_sales_data(Variable.get("OPENWEATHERMAP_API_KEY"))
+        logging.info('data_enrichment done')
+    except Exception as e:
+        logging.error(f"Error in data_enrichment: {str(e)}")
 
 def data_delivery():
-    db_credentials = load_credentials()
-    print('data_delivery started')
-    load_users_dim(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
-    load_sales_dim(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
-    load_product_data(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
-    load_stores_dim(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
-    print('data_delivery done')
+    try:
+        db_credentials = load_credentials()
+        logging.info('data_delivery started')
+        load_users_dim(**db_credentials)
+        load_sales_dim(**db_credentials)
+        load_product_data(**db_credentials)
+        load_stores_dim(**db_credentials)
+        logging.info('data_delivery done')
+    except Exception as e:
+        logging.error(f"Error in data_delivery: {str(e)}")
 
-# Define the tasks
 database_preparation_task = PythonOperator(
     task_id='database_preparation',
     python_callable=database_preparation,
@@ -90,5 +101,4 @@ data_delivery_task = PythonOperator(
     dag=dag,
 )
 
-# Set task dependencies
 database_preparation_task >> data_extraction_task >> data_enrichment_task >> data_delivery_task
