@@ -1,25 +1,25 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.utils.dates import days_ago
-from scripts.data_delivery import drop_tables, create_tables, load_users_dim, load_sales_dim, load_product_data
+from scripts.data_delivery import *
 from scripts.data_enrichment import process_users_data, process_sales_data
 from scripts.extract_data import extract_users_data_json, extract_users_data_csv
 from airflow.models import Variable
 
 # Define default arguments for the DAG
 default_args = {
-    'owner': 'airflow',
+    'owner': 'Ahmed Ashraf',
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 1,
+    'retries': 0,
 }
 
 # Create the DAG
 dag = DAG(
-    'sales_data_pipeline',
+    'sales_pipeline',
     default_args=default_args,
-    description='A simple sales data pipeline',
+    description='E-E sales data pipeline',
     schedule_interval='@daily',
     start_date=days_ago(1),
     catchup=False,
@@ -49,6 +49,7 @@ def data_delivery():
     load_users_dim()
     load_sales_dim()
     load_product_data()
+    load_stores_dim()
     print('data_delivery done')
 
 # Define the tasks

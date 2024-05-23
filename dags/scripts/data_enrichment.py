@@ -75,12 +75,7 @@ def process_sales_data(api_key):
     merged_df = pd.merge(sales_df, weather_df, on='store_id', how='left')
     os.makedirs('./datalake/silver/', exist_ok=True)
     merged_df.to_csv('./datalake/silver/sales_data.csv', index=False)
-    store_df = pd.DataFrame(weather_data)
-    store_df = store_df[['store_id','lat','lng']]
-    store_df['store_name'] = 'store_' + store_df['store_id'].astype(str)
-    merged_df.to_csv('./datalake/silver/sales_data.csv', index=False)
-    store_df.to_csv('./datalake/gold/dim_stores.csv', index=False)
-
+    
 
 # def process_sales_data():
 #     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')

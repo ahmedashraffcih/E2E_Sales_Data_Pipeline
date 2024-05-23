@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import datetime
-from scripts.utils.utils import format_users_data, extract_users_api, export_to_json, extract_weather_api
+from scripts_local.utils.utils import format_users_data, extract_users_api, export_to_json, extract_weather_api
 
 def extract_users_data_json():
     # Export data to bronze layer

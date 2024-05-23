@@ -19,7 +19,7 @@ def create_connection():
     try:
         db_credentials = load_db_credentials()
         connection = psycopg2.connect(
-            host='127.0.0.1',
+            host='postgres',
             database='sales_db',
             user='postgres',
             password='postgres'

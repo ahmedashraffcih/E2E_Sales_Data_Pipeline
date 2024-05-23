@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import datetime
-from scripts.tables_creation import *
+from scripts_local.tables_creation import *
 
 def load_users_dim():
     users_df = pd.read_csv('./datalake/silver/users.csv')
@@ -13,6 +13,16 @@ def load_sales_dim():
     sales_df = sales_df[['order_id','customer_id','product_id','quantity','price','order_date','store_id','lat','lng','weather','description','temp','pressure','humidity']]
     sales_df.to_csv('./datalake/gold/sales_fact.csv',index=False)
     load_data_to_postgres('fact_sales',sales_df)
+
+def load_stores_dim():
+    stores_df = pd.read_csv('./datalake/silver/sales_data.csv')
+    stores_df.drop_duplicates(subset=['store_id'], inplace=True)
+    stores_df = stores_df[['store_id','lat','lng']]
+    stores_df = stores_df.sort_values(by='store_id').reset_index(drop=True)
+    stores_df['store_name'] = 'store_' + stores_df['store_id'].astype(str)
+    stores_df.to_csv('./datalake/gold/dim_stores.csv', index=False)
+    load_data_to_postgres('dim_stores',stores_df)
+
 
 def load_product_data():
     sales_df = pd.read_csv('./datalake/silver/sales_data.csv')

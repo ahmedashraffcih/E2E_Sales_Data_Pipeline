@@ -10,7 +10,8 @@ def create_tables():
     queries = [
         (CREATE_USERS_TABLE_SQL, "users"),
         (CREATE_PRODUCT_TABLE_SQL, "products"),
-        (CREATE_FACT_TABLE_SQL, "facts")
+        (CREATE_FACT_TABLE_SQL, "facts"),
+        (CREATE_STORES_TABLE_SQL, "stores")
     ]
     conn = create_connection()
     if conn:
@@ -23,7 +24,8 @@ def drop_tables():
     queries = [
         (DROP_USERS_TABLE_SQL, "users"),
         (DROP_PRODUCT_TABLE_SQL, "products"),
-        (DROP_FACT_TABLE_SQL, "facts")
+        (DROP_FACT_TABLE_SQL, "facts"),
+        (DROP_STORES_TABLE_SQL, "stores")
     ]
     conn = create_connection()
     if conn:
