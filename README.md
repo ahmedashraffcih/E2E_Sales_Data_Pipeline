@@ -3,6 +3,8 @@ The pipeline should combine generated sales data with data from external sources
 transformations and aggregations, and store the final dataset in a database. 
 The aim is to enable analysis and derive insights into customer behaviour and sales performance.
 
+---
+
 ## Introduction
 
 The goal of this project is to build an end-to-end data pipeline for sales data, integrating external weather data, transforming and storing it in a data warehouse.
@@ -20,6 +22,8 @@ So the approach I followed is the Medallion-architecture to apply the with the g
     - Since we need to know the weather for each sale it will make more since if we can fetch the data from the api with the sale date in addition to the lat and lan but that wasn't an option and also the only lat and lan values we have appears in the users side.
     - I created a dummy data for stores and applied that logic to the store lat and lng+
 
+---
+
 ### Step 1: Data Collection and Storage
 
 We have 3 different Data Sources:
@@ -35,6 +39,7 @@ We have 3 different Data Sources:
         - Extract users data from the API and dumb it as is in the bronze layer
     - extract_users_data_csv()
         - Extract users data from the API and foramt it in csv format and save it in the bronze layer 
+---
 
 ### Step 2: Data Enrichment
 
@@ -47,7 +52,7 @@ We have 3 different Data Sources:
     - process_sales_data()
         - Removes duplicate entries, calculates the latest product price, and merges with weather data based on store ID.
 
-
+---
 
 ### Step 3: Data Delivery
 
@@ -78,7 +83,7 @@ We have 3 different Data Sources:
         - Frequency of Changes: If changes are frequent and impact a significant portion of the data, consider full load. For sparse and infrequent changes, upsert is more efficient.
         - Historical Accuracy: If maintaining historical accuracy and tracking incremental changes are critical, upsert is preferred.
         - Resource Constraints: Full load operations are resource-intensive. If resources are limited, upsert can be more efficient.
-
+---
 
 ## Database Schema
 The transformed data is stored in a relational database with a star schema design, consisting of the following tables:
@@ -95,6 +100,7 @@ The transformed data is stored in a relational database with a star schema desig
 4. dim_product_master: Contains information about products, such as product ID, name, price, start date, end date, and whether it is a current product.
     - Columns: product_id, product_name, price, start_date, end_date, is_current
 
+---
 
 ## Setup
 - We have 2 options either running the pipeline manually using local enviroment(postgres on docker) or using airflow through docker
@@ -106,6 +112,8 @@ Before using this pipeline, ensure you have the following prerequisites:
 - Python
 - Docker
 - OpenWeatherMap API key for fetching weather data.
+
+---
 
 ### Configuration
 
@@ -131,6 +139,8 @@ docker-compose up -d
     - Database Credentials (host,db,user,password)
 6. Trigger DAG: Trigger the DAG manually from the Airflow UI or wait for the scheduled interval to execute the pipeline automatically.
 
+---
+
 ### Prerequisites for Local Enviroment
 
 Before using this pipeline, ensure you have the following prerequisites:
@@ -143,6 +153,8 @@ Before using this pipeline, ensure you have the following prerequisites:
 - .env file to store credentials
         - API Key
         - Database Credentials (host,db,user,password)
+
+---
 
 ### Configuration
 1. Clone the Repository: Clone the sales data pipeline repository from the GitHub repository.
@@ -168,8 +180,8 @@ pip install requirements.txt
 python main.py
 ```
 
+---
 
 ## Contributing
 
 Contributions are welcome! If you find any issues or have suggestions for improvements, feel free to open an issue or submit a pull request.
-
