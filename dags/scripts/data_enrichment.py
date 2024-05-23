@@ -46,9 +46,11 @@ def process_users_data():
     updated_users_df = pd.DataFrame(updated_users)
     final_users_df = pd.concat([existing_users_df, updated_users_df], ignore_index=True)
     # Save the final DataFrame to the Silver layer
+    os.makedirs('./datalake/silver/', exist_ok=True)
     final_users_df.to_csv('./datalake/silver/users.csv', index=False)
 
-def process_sales_data():
+def process_sales_data(api_key):
+    os.makedirs('./datalake/bronze/', exist_ok=True)
     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')
     sales_df.drop_duplicates(subset=['order_id'], inplace=True)
     store_ids = [random.randint(1, 20) for _ in range(len(sales_df))]
@@ -57,7 +59,7 @@ def process_sales_data():
     for store_id in range(1, 21):
         latitude = random.uniform(-90, 90)  
         longitude = random.uniform(-180, 180)
-        weather_info = extract_weather_api2(latitude, longitude)
+        weather_info = extract_weather_api2(latitude, longitude,api_key)
         if weather_info:
             weather_data.append({
                 'store_id': store_id,
@@ -71,11 +73,14 @@ def process_sales_data():
             })
     weather_df = pd.DataFrame(weather_data)
     merged_df = pd.merge(sales_df, weather_df, on='store_id', how='left')
+    os.makedirs('./datalake/silver/', exist_ok=True)
+    merged_df.to_csv('./datalake/silver/sales_data.csv', index=False)
     store_df = pd.DataFrame(weather_data)
     store_df = store_df[['store_id','lat','lng']]
     store_df['store_name'] = 'store_' + store_df['store_id'].astype(str)
     merged_df.to_csv('./datalake/silver/sales_data.csv', index=False)
     store_df.to_csv('./datalake/gold/dim_stores.csv', index=False)
+
 
 # def process_sales_data():
 #     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')

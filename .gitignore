@@ -4,4 +4,6 @@ __pycache__
 .pyc
 main.py
 postgres_data_warehouse/*
-postgres_data_warehouse
+postgres_airflow_data
+logs
+config
