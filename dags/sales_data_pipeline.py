@@ -24,12 +24,24 @@ dag = DAG(
     start_date=days_ago(1),
     catchup=False,
 )
+def load_credentials():
+    host = Variable.get("host")
+    db_name = Variable.get("database")
+    user = Variable.get("user")
+    password = Variable.get("password")
+    return {
+        "host": host,
+        "db_name": db_name,
+        "user": user,
+        "password": password
+    }
 
 # Define task functions
 def database_preparation():
+    db_credentials = load_credentials()
     print('database_preparation started')
-    drop_tables()
-    create_tables()
+    drop_tables(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
+    create_tables(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
     print('database_preparation done')
 
 def data_extraction():
@@ -45,11 +57,12 @@ def data_enrichment():
     print('data_enrichment done')
 
 def data_delivery():
+    db_credentials = load_credentials()
     print('data_delivery started')
-    load_users_dim()
-    load_sales_dim()
-    load_product_data()
-    load_stores_dim()
+    load_users_dim(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
+    load_sales_dim(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
+    load_product_data(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
+    load_stores_dim(db_credentials['host'],db_credentials['db_name'],db_credentials['user'],db_credentials['password'])
     print('data_delivery done')
 
 # Define the tasks

@@ -4,24 +4,30 @@ from datetime import datetime
 import re
 import random
 from scripts.utils.utils import *
+import logging
+
+logging.basicConfig(filename='data_enrichment.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 def process_users_data():
+    """
+    Process users' data by applying SCD Type 2 logic and saving the result to the Silver layer.
+    """
+    logging.info('Processing users data...')
     users_df = pd.read_csv('./datalake/bronze/users.csv')
     users_df['start_date'] = pd.to_datetime('today').date()
     users_df['end_date'] = '9999-12-31'
     users_df['is_current'] = True
-    users_df['phone'] = users_df['phone'].apply(lambda x:re.sub(r'\D', '', x))
-    # users_df.to_csv('./datalake/silver/users.csv',index=False)
-    ##### Applying SCD Type 2 Logic
+    users_df['phone'] = users_df['phone'].apply(lambda x: re.sub(r'\D', '', x))
+
     try:
         # Load existing users data
         existing_users_df = pd.read_csv('./datalake/silver/users.csv')
         existing_users_df['start_date'] = pd.to_datetime(existing_users_df['start_date'])
         existing_users_df['end_date'] = existing_users_df['end_date']
     except FileNotFoundError:
-        # If the Silver layer file does not exist, initialize it
         existing_users_df = pd.DataFrame(columns=users_df.columns)
-    # list to hold the updated records
+
     updated_users = []
 
     for idx, new_row in users_df.iterrows():
@@ -45,11 +51,15 @@ def process_users_data():
             
     updated_users_df = pd.DataFrame(updated_users)
     final_users_df = pd.concat([existing_users_df, updated_users_df], ignore_index=True)
-    # Save the final DataFrame to the Silver layer
     os.makedirs('./datalake/silver/', exist_ok=True)
     final_users_df.to_csv('./datalake/silver/users.csv', index=False)
+    logging.info('Users data processing completed')
 
 def process_sales_data(api_key):
+    """
+    Process sales data by adding weather information and saving the result to the Silver layer.
+    """
+    logging.info('Processing sales data...')
     os.makedirs('./datalake/bronze/', exist_ok=True)
     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')
     sales_df.drop_duplicates(subset=['order_id'], inplace=True)
@@ -63,8 +73,8 @@ def process_sales_data(api_key):
         if weather_info:
             weather_data.append({
                 'store_id': store_id,
-                'lat':weather_info['lat'],
-                'lng':weather_info['lng'],
+                'lat': weather_info['lat'],
+                'lng': weather_info['lng'],
                 'weather': weather_info['weather'],
                 'description': weather_info['description'],
                 'temp': weather_info['temp'],
@@ -76,7 +86,7 @@ def process_sales_data(api_key):
     merged_df = pd.merge(sales_df, weather_df, on='store_id', how='left')
     os.makedirs('./datalake/silver/', exist_ok=True)
     merged_df.to_csv('./datalake/silver/sales_data.csv', index=False)
-    
+    logging.info('Sales data processing completed')
 
 # def process_sales_data():
 #     sales_df = pd.read_csv('./datalake/bronze/sales_data.csv')

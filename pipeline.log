@@ -1,0 +1,11 @@
+2024-05-23 20:28:09,041 - INFO - Pipeline started
+2024-05-23 20:28:09,041 - INFO - Database preparation started
+2024-05-23 20:28:09,100 - INFO - Database preparation done
+2024-05-23 20:28:09,101 - INFO - Data extraction started
+2024-05-23 20:28:20,664 - INFO - users.json file has been exported to ./datalake/bronze/users.json
+2024-05-23 20:28:21,141 - INFO - Data extraction done
+2024-05-23 20:28:21,141 - INFO - Data enrichment started
+2024-05-23 20:28:40,472 - INFO - Data enrichment done
+2024-05-23 20:28:40,472 - INFO - Data delivery started
+2024-05-23 20:28:40,841 - INFO - Data delivery done
+2024-05-23 20:28:40,842 - INFO - Pipeline succeeded

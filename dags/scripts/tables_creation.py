@@ -1,40 +1,62 @@
 from scripts.utils.db_utils import *
 from scripts.sql.sql_queries import *
+import logging
 
-host ="localhost"
-database = "sales_db"
-user ="postgres"
-password = "postgres"
+logging.basicConfig(filename='table_creations.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def create_tables():
+def create_tables(host,db_name,user,password):
+    """
+    Create tables in the database based on SQL queries defined in sql_queries.py.
+    """
+    logging.info('Creating tables...')
     queries = [
         (CREATE_USERS_TABLE_SQL, "users"),
         (CREATE_PRODUCT_TABLE_SQL, "products"),
         (CREATE_FACT_TABLE_SQL, "facts"),
         (CREATE_STORES_TABLE_SQL, "stores")
     ]
-    conn = create_connection()
+    conn = create_connection(host,db_name,user,password)
     if conn:
+        cursor = conn.cursor()
         for query, table_name in queries:
-            execute_query(conn, query, table_name)
+            if execute_query(conn, query, table_name):
+                logging.info(f'Table {table_name} created successfully')
+            else:
+                logging.error(f'Failed to create table {table_name}')
         close_connection(conn)
+    else:
+        logging.error('Failed to establish a connection to the database')
 
 
-def drop_tables():
+def drop_tables(host,db_name,user,password):
+    """
+    Drop tables from the database based on SQL queries defined in sql_queries.py.
+    """
+    logging.info('Dropping tables...')
     queries = [
         (DROP_USERS_TABLE_SQL, "users"),
         (DROP_PRODUCT_TABLE_SQL, "products"),
         (DROP_FACT_TABLE_SQL, "facts"),
         (DROP_STORES_TABLE_SQL, "stores")
     ]
-    conn = create_connection()
+    conn = create_connection(host,db_name,user,password)
     if conn:
+        cursor = conn.cursor()
         for query, table_name in queries:
-            execute_query(conn, query, table_name)
+            if execute_query(conn, query, table_name):
+                logging.info(f'Table {table_name} dropped successfully')
+            else:
+                logging.error(f'Failed to drop table {table_name}')
         close_connection(conn)
+    else:
+        logging.error('Failed to establish a connection to the database')
 
-def load_data_to_postgres(table_name, data_frame):
-    conn = create_connection()
+def load_data_to_postgres(table_name, data_frame,host,db_name,user,password):
+    """
+    Load data from a pandas DataFrame into a PostgreSQL table.
+    """
+    logging.info(f'Loading data into table {table_name}...')
+    conn = create_connection(host,db_name,user,password)
     if conn:
         cursor = conn.cursor()
         cursor.execute(f"TRUNCATE TABLE {table_name} RESTART IDENTITY;")
@@ -45,7 +67,7 @@ def load_data_to_postgres(table_name, data_frame):
             insert_query = f"INSERT INTO {table_name} ({cols}) VALUES ({vals})"
             cursor.execute(insert_query, tuple(row))
         conn.commit()
-        print(f"Data loaded successfully into table {table_name}!")
+        logging.info(f"Data loaded successfully into table {table_name}")
         close_connection(conn)
     else:
-        print(f"Failed to connect to the database and load data into table {table_name}")
+        logging.error(f"Failed to connect to the database and load data into table {table_name}")
