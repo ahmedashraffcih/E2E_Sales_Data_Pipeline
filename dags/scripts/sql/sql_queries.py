@@ -27,6 +27,7 @@ CREATE_STORES_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS dim_stores (
     store_id INT PRIMARY KEY,
     store_name VARCHAR(255),
+    country VARCHAR(10),
     lat float,
     lng float
 );
@@ -41,8 +42,6 @@ CREATE TABLE IF NOT EXISTS fact_sales (
     price FLOAT,
     order_date DATE,
     store_id INT NOT NULL,
-    lat float,
-    lng float,
     description VARCHAR(255),
     weather VARCHAR(255),
     temp FLOAT,

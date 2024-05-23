@@ -70,6 +70,7 @@ def process_sales_data(api_key):
                 'temp': weather_info['temp'],
                 'pressure': weather_info['pressure'],
                 'humidity': weather_info['humidity'],
+                'country': weather_info['country'],
             })
     weather_df = pd.DataFrame(weather_data)
     merged_df = pd.merge(sales_df, weather_df, on='store_id', how='left')

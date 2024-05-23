@@ -58,6 +58,7 @@ def extract_weather_api2(latitude, longitude,api_key):
             'humidity': data['main']['humidity'],
             'lat': data['coord']['lat'],
             'lng': data['coord']['lon'],
+            'country': data['sys'].get('country', 'N/A'),
         }
         return weather_info
     else:

@@ -37,6 +37,7 @@ def extract_weather_api(locationlist):
         data['temp']= res['main']['temp']
         data['pressure']= res['main']['pressure']
         data['humidity']= res['main']['humidity']
+        data['country']= res['sys']['country']
         # data['grnd_level']= res['main']['grnd_level']
         # data['sea_level']= res['main']['sea_level']
         # data['wind_speed']= res['wind']['speed']
@@ -59,6 +60,7 @@ def extract_weather_api2(latitude, longitude):
             'humidity': data['main']['humidity'],
             'lat': data['coord']['lat'],
             'lng': data['coord']['lon'],
+            'country': data['sys'].get('country', 'N/A'),
         }
         return weather_info
     else:
