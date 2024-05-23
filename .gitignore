@@ -7,3 +7,4 @@ postgres_data_warehouse/*
 postgres_airflow_data
 logs
 config
+datalake/bronze/*

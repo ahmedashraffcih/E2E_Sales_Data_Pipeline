@@ -56,6 +56,74 @@ This function ensures that historical changes are tracked for each user, maintai
     - Historical Accuracy: If maintaining historical accuracy and tracking incremental changes are critical, upsert is preferred.
     - Resource Constraints: Full load operations are resource-intensive. If resources are limited, upsert can be more efficient.
 
+## Setting Up and Running the Data Pipeline
+- We have 2 options either running the pipeline manually using main.py or using airflow through docker
+- Prerequisites for Airflow
+    - Docker
+    - OpenWeatherMap API key for fetching weather data.
+1. Clone the Repository: Clone the sales data pipeline repository from the GitHub repository.
+
+```
+git clone https://github.com/your_username/sales-data-pipeline.git
+```
+2. Navigate to Project Directory: Move into the project directory.
+
+```
+cd sales-data-pipeline
+```
+
+3. Run Docker Container: Start a Docker container using the built image.
+
+```
+docker-compose up -d
+```
+4. Access Airflow UI: Access the Airflow web interface by navigating to http://localhost:8080 in your web browser.
+5. Add credentials in Airflow Variables
+    - API Key
+    - Database Credentials (host,db,user,password)
+6. Trigger DAG: Trigger the DAG manually from the Airflow UI or wait for the scheduled interval to execute the pipeline automatically.
+
+- Prerequisites for local
+    - Python 3.x installed on your system.
+    - Docker
+    - OpenWeatherMap API key for fetching weather data.
+    - Libraries in requirments.txt
+    - .env file to store credentials
+        - API Key
+        - Database Credentials (host,db,user,password)
+
+## Explanation of Data Transformation Steps and Assumptions
+1. Data Extraction: The pipeline extracts sales data from a CSV file, users data from a CSV file, and weather data from the OpenWeatherMap API.
+
+2. Data Cleaning and Transformation:
+
+    - Sales Data: Removes duplicate entries, calculates the latest product price, and merges with weather data based on store ID.
+    - Users Data: Applies slowly changing dimension (SCD) Type 2 logic to handle historical changes and updates in user data.
+    - Product Data: Calculates the latest product price and applies SCD Type 2 logic to maintain product history.
+    - Store Data: Cleans store data and handles missing values for country information.
+    - Data Loading: The transformed data is loaded into a PostgreSQL database in the Gold layer, consisting of dimension and fact tables.
+3. Data Loading: The transformed data is loaded into a PostgreSQL database in the Gold layer, consisting of dimension and fact tables.
+4. Assumptions:
+    - The sales data is assumed to be clean and does not require extensive cleaning or preprocessing.
+    - Weather data from the OpenWeatherMap API is assumed to be accurate and reliable.
+    - The database schema follows a star schema design for efficient querying and analysis.
+    - SCD Type 2 logic is applied to track historical changes in user and product data for analytical purposes.
+
+## Database Schema
+The transformed data is stored in a relational database with a star schema design, consisting of the following tables:
+
+1. dim_users: Contains information about users, including their name, email, phone number, city, start date, end date, and whether they are current users.
+    - Columns: user_id, name, email, phone, city, start_date, end_date, is_current
+
+2. fact_sales: Stores sales data along with relevant information such as product details, order quantity, price, order date, store ID, and weather conditions.
+    - Columns: order_id, customer_id, product_id, quantity, price, order_date, store_id, weather, description, temp, pressure, humidity
+
+3. dim_stores: Holds details about stores, including store ID, geographical coordinates (latitude and longitude), and country.
+    - Columns: store_id, lat, lng, country
+
+4. dim_product_master: Contains information about products, such as product ID, name, price, start date, end date, and whether it is a current product.
+    - Columns: product_id, product_name, price, start_date, end_date, is_current
+
 ## Features
 
 - Continuous Integration: Automatically runs unit tests whenever changes are pushed to the repository to ensure code quality.
