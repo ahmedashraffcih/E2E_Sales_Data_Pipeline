@@ -17,6 +17,8 @@ This architecture incrementally and progressively improves the structure and qua
 - incorporates robust error handling mechanisms to gracefully handle exceptions and ensure smooth execution.
 
 ---
+![Solution Architecture](https://github.com/ahmedashraffcih/E2E_Sales_Data_Pipeline/blob/main/assets/arch.png)
+
 
 ### Assumptions 
 - The sales data is assumed to be clean and does not require extensive cleaning or preprocessing.
@@ -115,6 +117,8 @@ The transformed data is stored in a relational database with a star schema desig
 4. dim_product_master: Contains information about products, such as product ID, name, price, start date, end date, and whether it is a current product.
     - Columns: product_id, product_name, price, start_date, end_date, is_current
 
+![Data Model](https://github.com/ahmedashraffcih/E2E_Sales_Data_Pipeline/blob/main/assets/data_model.png)
+
 ---
 
 ## Setup
@@ -175,12 +179,12 @@ Before using this pipeline, ensure you have the following prerequisites:
 1. Clone the Repository: Clone the sales data pipeline repository from the GitHub repository.
 
 ```
-git clone https://github.com/your_username/sales-data-pipeline.git
+git clone https://github.com/ahmedashraffcih/E2E_Sales_Data_Pipeline
 ```
 2. Navigate to Project Directory: Move into the project directory.
 
 ```
-cd sales-data-pipeline
+cd E2E_Sales_Data_Pipeline
 ```
 
 3. Install the required packages
