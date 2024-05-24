@@ -134,6 +134,16 @@ The transformed data is stored in a relational database with a star schema desig
 
 - Weather Impact: Assess the impact of weather conditions on sales by correlating sales data with weather data.
 
+- Metrics
+    - Average Order Amount
+    - Average Order Quantity
+    - Average Sales
+    - Order Count
+    - Quarterly Sales
+    - Total Sales
+    - Total Sales monthly difference 
+    - Total Sales per weather
+
 By performing these aggregations and data manipulations, businesses can gain valuable insights into their sales operations, customer behavior, product performance, and market trends, enabling informed decision-making and strategic planning.
 
 ---
