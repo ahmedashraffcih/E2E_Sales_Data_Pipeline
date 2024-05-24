@@ -16,9 +16,9 @@ This architecture incrementally and progressively improves the structure and qua
 - The codebase is organized into separate modules and packages to encapsulate related functionality and promote code reusability. 
 - incorporates robust error handling mechanisms to gracefully handle exceptions and ensure smooth execution.
 
----
 ![Solution Architecture](https://github.com/ahmedashraffcih/E2E_Sales_Data_Pipeline/blob/main/assets/arch.png)
 
+---
 
 ### Assumptions 
 - The sales data is assumed to be clean and does not require extensive cleaning or preprocessing.
@@ -121,6 +121,23 @@ The transformed data is stored in a relational database with a star schema desig
 
 ---
 
+## Reporting Layer
+
+![Dashboard 1](https://github.com/ahmedashraffcih/E2E_Sales_Data_Pipeline/blob/main/reporting/assets/report_1.png)
+![Dashboard 2](https://github.com/ahmedashraffcih/E2E_Sales_Data_Pipeline/blob/main/reporting/assets/report_2.png)
+
+- Sales Analysis: Aggregate sales data to analyze performance metrics such as total sales, quantity sold, average price, and sales margins over different time periods (e.g., daily, weekly, monthly).
+
+- Product Analysis: Identify top-selling products.
+
+- Store Performance: Identify high-performing stores.
+
+- Weather Impact: Assess the impact of weather conditions on sales by correlating sales data with weather data.
+
+By performing these aggregations and data manipulations, businesses can gain valuable insights into their sales operations, customer behavior, product performance, and market trends, enabling informed decision-making and strategic planning.
+
+---
+
 ## Setup
 - We have 2 options either running the pipeline manually using local enviroment(postgres on docker) or using airflow through docker
 
@@ -194,12 +211,13 @@ pip install requirements.txt
 
 4. Create .env file the project directory and add the credentials
 
-5. Run main.py
+5. Run main.pyproduct performance by calculating metrics such as sales volume, revenue, profitability, and customer satisfaction ratings. Identify top-selling products, slow-moving items, and product
 ```
 python main.py
 ```
 
 ---
+
 
 ## Contributing
 
