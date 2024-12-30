@@ -8,22 +8,24 @@ from airflow.models import Variable
 
 # Define default arguments for the DAG
 default_args = {
-    'owner': 'Ahmed Ashraf',
-    'depends_on_past': False,
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 0,
+    "owner": "Ahmed Ashraf",
+    "depends_on_past": False,
+    "email_on_failure": False,
+    "email_on_retry": False,
+    "retries": 0,
 }
 
 # Create the DAG
 dag = DAG(
-    'sales_pipeline',
+    "sales_pipeline",
     default_args=default_args,
-    description='E-E sales data pipeline',
-    schedule_interval='@daily',
+    description="E-E sales data pipeline",
+    schedule_interval="@daily",
     start_date=days_ago(1),
     catchup=False,
 )
+
+
 def load_credentials():
     host = Variable.get("host")
     db_name = Variable.get("database")
@@ -36,69 +38,79 @@ def load_credentials():
         "password": password,
     }
 
+
 # Define task functions
 def database_preparation():
     try:
         db_credentials = load_credentials()
-        logging.info('database_preparation started')
+        logging.info("database_preparation started")
         drop_tables(**db_credentials)
         create_tables(**db_credentials)
-        logging.info('database_preparation done')
+        logging.info("database_preparation done")
     except Exception as e:
         logging.error(f"Error in database_preparation: {str(e)}")
 
+
 def data_extraction():
     try:
-        logging.info('data_extraction started')
+        logging.info("data_extraction started")
         extract_users_data_json()
         extract_users_data_csv()
-        logging.info('data_extraction done')
+        logging.info("data_extraction done")
     except Exception as e:
         logging.error(f"Error in data_extraction: {str(e)}")
 
+
 def data_enrichment():
     try:
-        logging.info('data_enrichment started')
+        logging.info("data_enrichment started")
         process_users_data()
         process_sales_data(Variable.get("OPENWEATHERMAP_API_KEY"))
-        logging.info('data_enrichment done')
+        logging.info("data_enrichment done")
     except Exception as e:
         logging.error(f"Error in data_enrichment: {str(e)}")
+
 
 def data_delivery():
     try:
         db_credentials = load_credentials()
-        logging.info('data_delivery started')
+        logging.info("data_delivery started")
         load_users_dim(**db_credentials)
         load_sales_dim(**db_credentials)
         load_product_data(**db_credentials)
         load_stores_dim(**db_credentials)
-        logging.info('data_delivery done')
+        logging.info("data_delivery done")
     except Exception as e:
         logging.error(f"Error in data_delivery: {str(e)}")
 
+
 database_preparation_task = PythonOperator(
-    task_id='database_preparation',
+    task_id="database_preparation",
     python_callable=database_preparation,
     dag=dag,
 )
 
 data_extraction_task = PythonOperator(
-    task_id='data_extraction',
+    task_id="data_extraction",
     python_callable=data_extraction,
     dag=dag,
 )
 
 data_enrichment_task = PythonOperator(
-    task_id='data_enrichment',
+    task_id="data_enrichment",
     python_callable=data_enrichment,
     dag=dag,
 )
 
 data_delivery_task = PythonOperator(
-    task_id='data_delivery',
+    task_id="data_delivery",
     python_callable=data_delivery,
     dag=dag,
 )
 
-database_preparation_task >> data_extraction_task >> data_enrichment_task >> data_delivery_task
+(
+    database_preparation_task
+    >> data_extraction_task
+    >> data_enrichment_task
+    >> data_delivery_task
+)

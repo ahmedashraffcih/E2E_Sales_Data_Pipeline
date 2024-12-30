@@ -5,8 +5,7 @@ import os
 from psycopg2 import Error
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
@@ -16,12 +15,8 @@ def load_db_credentials():
     database = os.getenv("DATABASE_NAME")
     user = os.getenv("DATABASE_USER")
     password = os.getenv("DATABASE_PASSWORD")
-    return {
-        "host": host,
-        "database": database,
-        "user": user,
-        "password": password
-    }
+    return {"host": host, "database": database, "user": user, "password": password}
+
 
 def create_connection():
     try:
@@ -30,7 +25,7 @@ def create_connection():
             host=db_credentials["host"],
             database=db_credentials["database"],
             user=db_credentials["user"],
-            password=db_credentials["password"]
+            password=db_credentials["password"],
         )
         logging.info("Connected to PostgreSQL database successfully")
         return connection
@@ -38,10 +33,12 @@ def create_connection():
         logging.error("Error while connecting to PostgreSQL: %s", error)
         return None
 
+
 def close_connection(connection):
     if connection:
         connection.close()
         logging.info("PostgreSQL connection is closed")
+
 
 def execute_query(connection, query, table_name):
     try:
